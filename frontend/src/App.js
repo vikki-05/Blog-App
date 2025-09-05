@@ -32,50 +32,44 @@ function RequireAuth({ children }) {
 }
 
 function MainApp() {
-  const { user, token, logout, api } = useContext(AuthContext); // ✅ use shared api
+  const { user, token, logout, api } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchPosts();
+    if (user) fetchPosts();
   }, [user]);
 
   const fetchPosts = () => {
     api
       .get("/posts")
       .then((res) => setPosts(res.data))
-      .catch((err) => console.error(err));
+      .catch(() => setError("❌ Failed to load posts"));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!token) {
-      alert("Please login first!");
+      setError("⚠️ Please login first!");
       return;
     }
 
-    if (editingId) {
-      api
-        .put(`/posts/${editingId}`, { title, content })
-        .then(() => {
-          fetchPosts();
-          setTitle("");
-          setContent("");
-          setEditingId(null);
-        })
-        .catch((err) => console.error(err));
-    } else {
-      api
-        .post("/posts", { title, content })
-        .then(() => {
-          fetchPosts();
-          setTitle("");
-          setContent("");
-        })
-        .catch((err) => console.error(err));
-    }
+    const request = editingId
+      ? api.put(`/posts/${editingId}`, { title, content })
+      : api.post("/posts", { title, content });
+
+    request
+      .then(() => {
+        fetchPosts();
+        setTitle("");
+        setContent("");
+        setEditingId(null);
+        setError("");
+      })
+      .catch(() => setError("❌ Failed to save post"));
   };
 
   const handleEdit = (post) => {
@@ -86,25 +80,24 @@ function MainApp() {
 
   const handleDelete = (id) => {
     if (!token) {
-      alert("Please login first!");
+      setError("⚠️ Please login first!");
       return;
     }
     api
       .delete(`/posts/${id}`)
       .then(() => fetchPosts())
-      .catch((err) => console.error(err));
+      .catch(() => setError("❌ Failed to delete post"));
   };
 
   return (
     <div className="App">
-      {/* ✅ Responsive Navbar */}
+      {/* ✅ Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
           <Link to="/" className="navbar-brand newspaper-title">
             📰 My Blog Times
           </Link>
 
-          {/* Hamburger for mobile */}
           <button
             className="navbar-toggler"
             type="button"
@@ -164,11 +157,15 @@ function MainApp() {
           element={
             <RequireAuth>
               <div className="container my-5">
-                {/* Post Form */}
                 <div className="mb-5">
                   <h2 className="newspaper-heading mb-4">
                     {editingId ? "✏️ Edit Article" : "🖋️ Write a New Article"}
                   </h2>
+
+                  {error && (
+                    <div className="alert alert-danger">{error}</div>
+                  )}
+
                   <form
                     onSubmit={handleSubmit}
                     className="p-4 border bg-light shadow-sm"
