@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   // Create a single axios instance
   const api = axios.create({
-    baseURL: "http://localhost:5000/api", // change if your backend runs elsewhere
+    baseURL: process.env.REACT_APP_API_URL,
   });
 
   // Whenever token changes, update axios headers

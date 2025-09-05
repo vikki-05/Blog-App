@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import {
@@ -33,7 +32,7 @@ function RequireAuth({ children }) {
 }
 
 function MainApp() {
-  const { user, token, logout } = useContext(AuthContext);
+  const { user, token, logout, api } = useContext(AuthContext); // ✅ use shared api
   const [posts, setPosts] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -44,8 +43,8 @@ function MainApp() {
   }, [user]);
 
   const fetchPosts = () => {
-    axios
-      .get("http://localhost:5000/api/posts")
+    api
+      .get("/posts")
       .then((res) => setPosts(res.data))
       .catch((err) => console.error(err));
   };
@@ -58,12 +57,8 @@ function MainApp() {
     }
 
     if (editingId) {
-      axios
-        .put(
-          `http://localhost:5000/api/posts/${editingId}`,
-          { title, content },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+      api
+        .put(`/posts/${editingId}`, { title, content })
         .then(() => {
           fetchPosts();
           setTitle("");
@@ -72,12 +67,8 @@ function MainApp() {
         })
         .catch((err) => console.error(err));
     } else {
-      axios
-        .post(
-          "http://localhost:5000/api/posts",
-          { title, content },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+      api
+        .post("/posts", { title, content })
         .then(() => {
           fetchPosts();
           setTitle("");
@@ -98,10 +89,8 @@ function MainApp() {
       alert("Please login first!");
       return;
     }
-    axios
-      .delete(`http://localhost:5000/api/posts/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    api
+      .delete(`/posts/${id}`)
       .then(() => fetchPosts())
       .catch((err) => console.error(err));
   };
@@ -128,15 +117,23 @@ function MainApp() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <div
+            className="collapse navbar-collapse justify-content-end"
+            id="navbarNav"
+          >
             <ul className="navbar-nav align-items-lg-center">
               {user ? (
                 <>
                   <li className="nav-item">
-                    <span className="nav-link text-white">Hi, {user.username}</span>
+                    <span className="nav-link text-white">
+                      Hi, {user.username}
+                    </span>
                   </li>
                   <li className="nav-item">
-                    <button onClick={logout} className="btn btn-sm btn-danger ms-lg-2">
+                    <button
+                      onClick={logout}
+                      className="btn btn-sm btn-danger ms-lg-2"
+                    >
                       Logout
                     </button>
                   </li>
@@ -188,7 +185,9 @@ function MainApp() {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label newspaper-title">Content</label>
+                      <label className="form-label newspaper-title">
+                        Content
+                      </label>
                       <textarea
                         className="form-control"
                         rows="4"
@@ -229,7 +228,9 @@ function MainApp() {
                       <div key={post._id} className="col-12 col-md-6 col-lg-4">
                         <div className="card border-dark shadow-sm h-100">
                           <div className="card-body">
-                            <h5 className="card-title newspaper-title">{post.title}</h5>
+                            <h5 className="card-title newspaper-title">
+                              {post.title}
+                            </h5>
                             <p className="card-text">{post.content}</p>
                           </div>
                           {user && (
