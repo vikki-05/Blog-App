@@ -10,10 +10,25 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 
+// ✅ Allow both local dev and deployed frontend
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://blog-app-phi-lake.vercel.app"
+];
+
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `CORS policy: Origin ${origin} not allowed`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
+
 app.use(express.json());
 
 // Routes
