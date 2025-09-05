@@ -1,0 +1,74 @@
+/* Global Background */
+body {
+  background-color: #e0d9c7; /* light beige */
+  font-family: "Georgia", serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Newspaper Style Titles */
+.newspaper-title {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.newspaper-heading {
+  font-family: "Georgia", serif;
+  font-weight: bold;
+  border-bottom: 2px solid #333;
+  display: inline-block;
+  padding-bottom: 5px;
+  margin-bottom: 1rem;
+  font-size: clamp(1.25rem, 2vw, 1.75rem); /* responsive font */
+}
+
+/* Cards */
+.card {
+  background-color: #fffdf7;
+  border-radius: 0;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: "Times New Roman", Times, serif;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+/* Responsive form spacing */
+form {
+  border-radius: 8px;
+}
+
+form .form-control {
+  font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.newspaper-footer {
+  font-family: "Georgia", serif;
+}
+
+/* Extra responsiveness */
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .footer {
+    font-size: 0.8rem;
+  }
+}
